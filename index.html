@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Naming — Ideation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FBF5F0;
+    --ink: #0A0A0A;
+    --ink-soft: #B8AEA6;
+    --rule: rgba(10, 10, 10, 0.08);
+    --accent: rgba(10, 10, 10, 0.35);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'EB Garamond', 'Cormorant Garamond', Georgia, serif;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  section {
+    min-height: 100vh;
+    padding: 6rem 3rem;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .eyebrow {
+    font-family: 'EB Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    color: var(--ink-soft);
+    margin-bottom: 1.5rem;
+  }
+
+  .section-title {
+    font-size: clamp(32px, 4vw, 48px);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+    margin-bottom: 0.75rem;
+  }
+
+  .section-lede {
+    font-size: 18px;
+    font-style: italic;
+    color: var(--ink-soft);
+    max-width: 560px;
+    line-height: 1.5;
+  }
+
+  .cloud-wrap {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 3rem;
+    margin-top: 4rem;
+    min-height: 600px;
+  }
+
+  .cloud {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 600px;
+  }
+
+  .word {
+    position: absolute;
+    font-family: 'EB Garamond', Georgia, serif;
+    font-weight: 400;
+    color: var(--ink-soft);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 600ms ease, transform 600ms ease;
+    user-select: none;
+    transform-origin: center;
+    will-change: transform;
+  }
+
+  .word.favourite {
+    color: var(--ink);
+  }
+
+  .word:hover {
+    color: var(--ink);
+  }
+
+  .word.active {
+    color: var(--ink);
+  }
+
+  .definition-panel {
+    position: sticky;
+    top: 6rem;
+    align-self: flex-start;
+    padding: 2rem 0 0 2rem;
+    border-left: 1px solid var(--rule);
+    min-height: 320px;
+  }
+
+  .def-label {
+    font-style: italic;
+    font-size: 13px;
+    color: var(--ink-soft);
+    letter-spacing: 0.04em;
+    margin-bottom: 1rem;
+  }
+
+  .def-word {
+    font-size: 40px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.25rem;
+    min-height: 48px;
+    transition: opacity 400ms ease;
+  }
+
+  .def-pronunciation {
+    font-style: italic;
+    font-size: 15px;
+    color: var(--ink-soft);
+    margin-bottom: 1.5rem;
+    transition: opacity 400ms ease;
+  }
+
+  .def-meaning {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--ink);
+    transition: opacity 400ms ease;
+  }
+
+  .def-meaning em {
+    color: var(--ink-soft);
+    font-style: italic;
+  }
+
+  .def-empty {
+    font-style: italic;
+    color: var(--ink-soft);
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  .legend {
+    position: absolute;
+    bottom: 2rem;
+    left: 3rem;
+    display: flex;
+    gap: 2rem;
+    font-size: 13px;
+    font-style: italic;
+    color: var(--ink-soft);
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--ink);
+  }
+
+  .dot.soft {
+    background: var(--ink-soft);
+  }
+
+  @media (max-width: 900px) {
+    .cloud-wrap {
+      grid-template-columns: 1fr;
+    }
+    .definition-panel {
+      position: static;
+      border-left: none;
+      border-top: 1px solid var(--rule);
+      padding: 2rem 0 0 0;
+    }
+    section {
+      padding: 4rem 1.5rem;
+    }
+    .legend {
+      position: static;
+      margin-top: 3rem;
+    }
+  }
+
+  .moodboard {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    margin-top: 4rem;
+  }
+
+  .moodboard-tile {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    background: rgba(10, 10, 10, 0.04);
+    overflow: hidden;
+    border-radius: 2px;
+  }
+
+  .moodboard-tile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 2000ms ease, opacity 600ms ease;
+  }
+
+  .moodboard-tile:hover img {
+    transform: scale(1.02);
+  }
+
+  .moodboard-tile.empty::after {
+    content: attr(data-n);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--ink-soft);
+    letter-spacing: 0.04em;
+  }
+
+  @media (max-width: 900px) {
+    .moodboard {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+    }
+  }
+
+  @keyframes drift {
+    0%   { transform: translate(0, 0); }
+    25%  { transform: translate(var(--dx1, 4px), var(--dy1, -3px)); }
+    50%  { transform: translate(var(--dx2, -2px), var(--dy2, 5px)); }
+    75%  { transform: translate(var(--dx3, 3px), var(--dy3, 2px)); }
+    100% { transform: translate(0, 0); }
+  }
+</style>
+</head>
+<body>
+
+<section id="naming">
+  <div class="eyebrow">01 — Naming</div>
+  <h1 class="section-title">A name to hold it.</h1>
+  <p class="section-lede">A gathering of candidates. Hover over any word to sit with its meaning.</p>
+
+  <div class="cloud-wrap">
+    <div class="cloud" id="cloud"></div>
+
+    <aside class="definition-panel" id="defPanel">
+      <div class="def-label">Definition</div>
+      <div id="defEmpty" class="def-empty">Hover over a word to read its meaning.</div>
+      <div id="defContent" style="display: none;">
+        <div class="def-word" id="defWord"></div>
+        <div class="def-pronunciation" id="defPron"></div>
+        <div class="def-meaning" id="defMeaning"></div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><span class="dot"></span> Favourites</div>
+    <div class="legend-item"><span class="dot soft"></span> Long list</div>
+  </div>
+</section>
+
+<section id="moodboard">
+  <div class="eyebrow">02 — Direction</div>
+  <h1 class="section-title">How it might feel.</h1>
+  <p class="section-lede">A quiet visual register. Natural light, held objects, soft thresholds.</p>
+
+  <div class="moodboard">
+    <div class="moodboard-tile empty" data-n="01"><img src="" alt="" style="display: none;"></div>
+    <div class="moodboard-tile empty" data-n="02"><img src="" alt="" style="display: none;"></div>
+    <div class="moodboard-tile empty" data-n="03"><img src="" alt="" style="display: none;"></div>
+    <div class="moodboard-tile empty" data-n="04"><img src="" alt="" style="display: none;"></div>
+    <div class="moodboard-tile empty" data-n="05"><img src="" alt="" style="display: none;"></div>
+    <div class="moodboard-tile empty" data-n="06"><img src="" alt="" style="display: none;"></div>
+    <div class="moodboard-tile empty" data-n="07"><img src="" alt="" style="display: none;"></div>
+    <div class="moodboard-tile empty" data-n="08"><img src="" alt="" style="display: none;"></div>
+    <div class="moodboard-tile empty" data-n="09"><img src="" alt="" style="display: none;"></div>
+    <div class="moodboard-tile empty" data-n="10"><img src="" alt="" style="display: none;"></div>
+    <div class="moodboard-tile empty" data-n="11"><img src="" alt="" style="display: none;"></div>
+    <div class="moodboard-tile empty" data-n="12"><img src="" alt="" style="display: none;"></div>
+  </div>
+</section>
+
+<script>
+  const words = [
+    { word: 'Pathos', fav: false, pron: '/ˈpeɪθɒs/', meaning: 'A quality that evokes pity, sympathy, or tender sorrow — <em>especially in art, music, or speech.</em>' },
+    { word: 'Paths', fav: true, pron: '/pɑːðz/', meaning: 'Ways made by walking. The routes we take — <em>literal and figurative — through unfamiliar country.</em>' },
+    { word: 'Wave', fav: true, pron: '/weɪv/', meaning: 'A swell of water, feeling, or sound that rises, moves through, and passes — <em>a rhythm of arrival and release.</em>' },
+    { word: 'Unfurl', fav: false, pron: '/ʌnˈfɜːl/', meaning: 'To open out from a rolled or folded state — <em>like a sail, a fern, or a held breath finally let go.</em>' },
+    { word: 'Furling', fav: true, pron: '/ˈfɜːlɪŋ/', meaning: 'The act of rolling up and making fast — <em>gathering something in, drawing close to hold.</em>' },
+    { word: 'Breadths', fav: true, pron: '/brɛdθs/', meaning: 'Distances from side to side. The full measure of a thing — <em>the width of feeling, of a life, of a love.</em>' },
+    { word: 'Knowing', fav: false, pron: '/ˈnəʊɪŋ/', meaning: 'Awareness gained through experience rather than instruction — <em>the quiet certainty that comes after.</em>' },
+    { word: 'Umbria', fav: false, pron: '/ˈʌmbrɪə/', meaning: 'A region of central Italy — <em>also from</em> umbra, <em>Latin for shadow; the soft half-light of memory.</em>' },
+    { word: 'Pause', fav: false, pron: '/pɔːz/', meaning: 'A temporary stop. A held breath between what was and what comes — <em>a permission to not yet continue.</em>' },
+    { word: 'Valley', fav: false, pron: '/ˈvælɪ/', meaning: 'A low place between hills — <em>the shape of grief in many languages; a passage one walks rather than ends.</em>' },
+    { word: 'D\u2019ask', fav: false, pron: '/dæsk/', meaning: 'An invented word — <em>suggestive of the Norse</em> dask <em>(a soft fall) or simply</em> to ask <em>— a gentle enquiry.</em>' },
+    { word: 'Anima', fav: true, pron: '/ˈænɪmə/', meaning: 'Latin for soul, breath, life. In Jungian thought — <em>the inner, feeling self that animates us.</em>' },
+    { word: 'Alma', fav: false, pron: '/ˈælmə/', meaning: 'Spanish and Portuguese for soul — <em>also nourishing, kind; the warm spirit of a person or place.</em>' },
+    { word: 'Spectre', fav: false, pron: '/ˈspɛktə/', meaning: 'A ghost or apparition. A presence felt rather than seen — <em>something that lingers in the room after.</em>' },
+    { word: 'Mirror', fav: false, pron: '/ˈmɪrə/', meaning: 'A reflective surface. What holds our likeness back to us — <em>in mourning, an unsettling companion.</em>' },
+    { word: 'Sino', fav: false, pron: '/ˈsiːnəʊ/', meaning: 'Italian and Spanish for <em>but</em>, <em>if not</em>, or <em>bosom</em> — <em>a word of pivot, of gentle turning toward.</em>' },
+    { word: 'Silencio', fav: false, pron: '/silˈenθjo/', meaning: 'Spanish for silence — <em>the companion of grief; the listening that says more than speech.</em>' },
+    { word: 'Perennial', fav: false, pron: '/pəˈrɛnɪəl/', meaning: 'Lasting through the year, returning season after season — <em>enduring, like love that outlives its object.</em>' },
+    { word: 'Armer\u00EDa', fav: false, pron: '/armeˈria/', meaning: 'Spanish for armoury, and also the sea thrift flower — <em>hardy, coastal, blooming in unforgiving ground.</em>' },
+    { word: 'Phosphor', fav: false, pron: '/ˈfɒsfə/', meaning: 'A substance that glows after light has gone — <em>Greek</em> phōsphoros, <em>bringer of light; the morning star.</em>' },
+    { word: 'Lumen', fav: false, pron: '/ˈluːmɛn/', meaning: 'A unit of light, from Latin — <em>also the open space within a vessel; a lit interior.</em>' },
+    { word: 'Lucent', fav: false, pron: '/ˈluːs(ə)nt/', meaning: 'Glowing with soft light. Translucent, clear — <em>luminous without being bright.</em>' },
+    { word: 'Lucerna', fav: false, pron: '/luˈtʃɛrna/', meaning: 'Latin and Italian for oil lamp — <em>a small carried light, enough to see the next step by.</em>' },
+    { word: 'Perpetua', fav: false, pron: '/pəˈpɛtjʊə/', meaning: 'Latin for continuous, perpetual — <em>also an early Christian martyr; a name meaning ever-lasting.</em>' },
+    { word: 'Faro', fav: true, pron: '/ˈfɑːrəʊ/', meaning: 'Spanish and Portuguese for lighthouse — <em>a steady light kept burning to guide those at sea home.</em>' },
+    { word: 'Ebbs', fav: true, pron: '/ɛbz/', meaning: 'The movements of a tide going out — <em>and by extension, any receding of strength, feeling, or life.</em>' },
+    { word: 'Elm', fav: false, pron: '/ɛlm/', meaning: 'A tall deciduous tree — <em>long associated with dignity, endurance, and the thresholds of memory.</em>' },
+    { word: 'Vela', fav: false, pron: '/ˈveːla/', meaning: 'Italian and Spanish for sail, candle, or vigil — <em>a watchful light kept through the night.</em>' },
+    { word: 'Flama', fav: false, pron: '/ˈflama/', meaning: 'Spanish for flame. Small, contained, moving — <em>the living shape of a feeling that refuses to go out.</em>' },
+    { word: 'Trine', fav: true, pron: '/traɪn/', meaning: 'A group or set of three; also a harmonious astrological aspect — <em>a gentle alignment, a quiet blessing.</em>' },
+    { word: 'Thread', fav: false, pron: '/θrɛd/', meaning: 'A fine strand of fibre. The line that holds cloth, or memory, together — <em>easily broken, patiently rejoined.</em>' },
+    { word: 'Twine', fav: false, pron: '/twaɪn/', meaning: 'Two or more threads wound together — <em>also to wind or intertwine; lives that have grown around each other.</em>' },
+    { word: 'Penelope', fav: false, pron: '/pəˈnɛləpɪ/', meaning: 'Wife of Odysseus in Homer — <em>weaver, waiter, keeper of faith through long absence; a patron of patient grief.</em>' },
+    { word: 'Medea', fav: false, pron: '/mɪˈdɪə/', meaning: 'A figure of Greek tragedy — <em>of devotion turned to devastation; a reminder that grief has wild edges.</em>' },
+    { word: 'Heard', fav: false, pron: '/hɜːd/', meaning: 'Past tense of <em>to hear</em>. To have been listened to — <em>perhaps the deepest thing the grieving ask for.</em>' },
+    { word: 'Herd', fav: true, pron: '/hɜːd/', meaning: 'A group of animals moving together — <em>also a gathering; company kept through the long walk.</em>' },
+    { word: 'Candl', fav: true, pron: '/ˈkænd(ə)l/', meaning: 'A pared-back form of <em>candle</em> — <em>a slow, steady light; a vigil kept for someone no longer here.</em>' }
+  ];
+
+  const cloud = document.getElementById('cloud');
+  const defEmpty = document.getElementById('defEmpty');
+  const defContent = document.getElementById('defContent');
+  const defWord = document.getElementById('defWord');
+  const defPron = document.getElementById('defPron');
+  const defMeaning = document.getElementById('defMeaning');
+
+  function hashString(s) {
+    let h = 0;
+    for (let i = 0; i < s.length; i++) {
+      h = ((h << 5) - h) + s.charCodeAt(i);
+      h |= 0;
+    }
+    return Math.abs(h);
+  }
+
+  function placeWords() {
+    cloud.innerHTML = '';
+    const W = cloud.offsetWidth;
+    const H = Math.max(cloud.offsetHeight, 600);
+
+    const placed = [];
+    const shuffled = [...words].sort((a, b) => {
+      if (a.fav && !b.fav) return -1;
+      if (!a.fav && b.fav) return 1;
+      return 0;
+    });
+
+    shuffled.forEach((w, i) => {
+      const el = document.createElement('span');
+      el.className = 'word' + (w.fav ? ' favourite' : '');
+      el.textContent = w.word;
+
+      const base = w.fav ? 28 : 20;
+      const variance = (hashString(w.word) % 12);
+      const size = base + variance;
+      el.style.fontSize = size + 'px';
+      el.style.fontStyle = (hashString(w.word) % 5 === 0) ? 'italic' : 'normal';
+
+      cloud.appendChild(el);
+
+      const rect = el.getBoundingClientRect();
+      const elW = rect.width;
+      const elH = rect.height;
+
+      let x, y, attempts = 0, placedOk = false;
+      while (attempts < 200 && !placedOk) {
+        x = Math.random() * (W - elW - 20) + 10;
+        y = Math.random() * (H - elH - 20) + 10;
+        placedOk = true;
+        for (const p of placed) {
+          if (x < p.x + p.w + 12 &&
+              x + elW + 12 > p.x &&
+              y < p.y + p.h + 8 &&
+              y + elH + 8 > p.y) {
+            placedOk = false;
+            break;
+          }
+        }
+        attempts++;
+      }
+
+      placed.push({ x, y, w: elW, h: elH });
+      el.style.left = x + 'px';
+      el.style.top = y + 'px';
+
+      const seed = hashString(w.word);
+      const dur = 14 + (seed % 8);
+      const delay = -(seed % 10);
+      const dx1 = ((seed % 7) - 3) * 1.2;
+      const dy1 = (((seed >> 3) % 7) - 3) * 1.2;
+      const dx2 = (((seed >> 6) % 7) - 3) * 1.2;
+      const dy2 = (((seed >> 9) % 7) - 3) * 1.2;
+      const dx3 = (((seed >> 12) % 7) - 3) * 1.2;
+      const dy3 = (((seed >> 15) % 7) - 3) * 1.2;
+
+      el.style.setProperty('--dx1', dx1 + 'px');
+      el.style.setProperty('--dy1', dy1 + 'px');
+      el.style.setProperty('--dx2', dx2 + 'px');
+      el.style.setProperty('--dy2', dy2 + 'px');
+      el.style.setProperty('--dx3', dx3 + 'px');
+      el.style.setProperty('--dy3', dy3 + 'px');
+      el.style.animation = `drift ${dur}s ease-in-out ${delay}s infinite`;
+
+      el.addEventListener('mouseenter', () => showDef(w));
+      el.addEventListener('focus', () => showDef(w));
+      el.addEventListener('click', () => showDef(w));
+      el.tabIndex = 0;
+    });
+  }
+
+  function showDef(w) {
+    defEmpty.style.display = 'none';
+    defContent.style.display = 'block';
+    defWord.textContent = w.word;
+    defPron.textContent = w.pron;
+    defMeaning.innerHTML = w.meaning;
+  }
+
+  window.addEventListener('load', placeWords);
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(placeWords, 200);
+  });
+</script>
+
+</body>
+</html>
