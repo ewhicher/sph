@@ -203,50 +203,93 @@
     }
   }
 
-  .moodboard {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.25rem;
-    margin-top: 4rem;
-  }
-
-  .moodboard-tile {
+  .mood-route {
+    margin: 4rem 0;
     position: relative;
-    aspect-ratio: 1 / 1;
-    background: rgba(10, 10, 10, 0.04);
-    overflow: hidden;
-    border-radius: 2px;
   }
 
-  .moodboard-tile img {
+  .route-label {
+    font-style: italic;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    color: var(--ink-soft);
+    margin-bottom: 2rem;
+  }
+
+  .mood-cluster {
+    position: relative;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    min-height: 400px;
+  }
+
+  .mood-img-wrap {
+    position: absolute;
+    will-change: transform;
+  }
+
+  .mood-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
-    transition: transform 2000ms ease, opacity 600ms ease;
+    border-radius: 2px;
+    background: rgba(10, 10, 10, 0.04);
+    transition: transform 900ms ease, box-shadow 900ms ease;
   }
 
-  .moodboard-tile:hover img {
+  .mood-img:hover {
     transform: scale(1.02);
+    box-shadow: 0 18px 36px rgba(10, 10, 10, 0.08);
   }
 
-  .moodboard-tile.empty::after {
-    content: attr(data-n);
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+  .mood-img-wrap:hover {
+    z-index: 10;
+  }
+
+  .mood-phrases {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    margin: 6rem auto;
+    max-width: 1400px;
+    width: 100%;
+  }
+
+  .mood-phrase {
     font-family: 'EB Garamond', Georgia, serif;
     font-style: italic;
-    font-size: 14px;
-    color: var(--ink-soft);
-    letter-spacing: 0.04em;
+    font-size: clamp(22px, 2.2vw, 30px);
+    line-height: 1.4;
+    color: var(--ink);
+    max-width: 620px;
+    letter-spacing: -0.005em;
+  }
+
+  .mood-phrase:nth-child(even) {
+    align-self: flex-end;
+    text-align: right;
+  }
+
+  .mood-phrase:nth-child(odd) {
+    align-self: flex-start;
   }
 
   @media (max-width: 900px) {
-    .moodboard {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 0.75rem;
+    .mood-phrases {
+      margin: 4rem auto;
+      gap: 2rem;
+    }
+    .mood-phrase,
+    .mood-phrase:nth-child(even),
+    .mood-phrase:nth-child(odd) {
+      max-width: none;
+      text-align: left;
+      align-self: stretch;
+    }
+    .mood-route {
+      margin: 3rem 0;
     }
   }
 
@@ -288,22 +331,63 @@
 
 <section id="moodboard">
   <div class="eyebrow">02 — Direction</div>
-  <h1 class="section-title">How it might feel.</h1>
-  <p class="section-lede">A quiet visual register. Natural light, held objects, soft thresholds.</p>
+  <h1 class="section-title">Five routes.</h1>
+  <p class="section-lede">Different atmospheres we could explore. Phrases from research, threaded between.</p>
 
-  <div class="moodboard">
-    <div class="moodboard-tile empty" data-n="01"><img src="" alt="" style="display: none;"></div>
-    <div class="moodboard-tile empty" data-n="02"><img src="" alt="" style="display: none;"></div>
-    <div class="moodboard-tile empty" data-n="03"><img src="" alt="" style="display: none;"></div>
-    <div class="moodboard-tile empty" data-n="04"><img src="" alt="" style="display: none;"></div>
-    <div class="moodboard-tile empty" data-n="05"><img src="" alt="" style="display: none;"></div>
-    <div class="moodboard-tile empty" data-n="06"><img src="" alt="" style="display: none;"></div>
-    <div class="moodboard-tile empty" data-n="07"><img src="" alt="" style="display: none;"></div>
-    <div class="moodboard-tile empty" data-n="08"><img src="" alt="" style="display: none;"></div>
-    <div class="moodboard-tile empty" data-n="09"><img src="" alt="" style="display: none;"></div>
-    <div class="moodboard-tile empty" data-n="10"><img src="" alt="" style="display: none;"></div>
-    <div class="moodboard-tile empty" data-n="11"><img src="" alt="" style="display: none;"></div>
-    <div class="moodboard-tile empty" data-n="12"><img src="" alt="" style="display: none;"></div>
+  <div class="mood-phrases">
+    <p class="mood-phrase">Accessibility through the lens of loss.</p>
+    <p class="mood-phrase">If grief is personal, can you blanket prescribe?</p>
+  </div>
+
+  <div class="mood-route">
+    <div class="route-label">Route I</div>
+    <div class="mood-cluster" data-folder="1"></div>
+  </div>
+
+  <div class="mood-phrases">
+    <p class="mood-phrase">Listen, but don&rsquo;t make me talk about it again.</p>
+    <p class="mood-phrase">Bereavement Fog &mdash; situational impairment, temporary cognitive impairment.</p>
+  </div>
+
+  <div class="mood-route">
+    <div class="route-label">Route II</div>
+    <div class="mood-cluster" data-folder="2"></div>
+  </div>
+
+  <div class="mood-phrases">
+    <p class="mood-phrase">Sense-making under deep uncertainty.</p>
+    <p class="mood-phrase">Support to validate your own personal experience.</p>
+  </div>
+
+  <div class="mood-route">
+    <div class="route-label">Route III</div>
+    <div class="mood-cluster" data-folder="3"></div>
+  </div>
+
+  <div class="mood-phrases">
+    <p class="mood-phrase">Grief changes shape over time.</p>
+    <p class="mood-phrase">Unfurling of emotions.</p>
+  </div>
+
+  <div class="mood-route">
+    <div class="route-label">Route IV</div>
+    <div class="mood-cluster" data-folder="4"></div>
+  </div>
+
+  <div class="mood-phrases">
+    <p class="mood-phrase">What do you need today? Vent. Honour. Guidance. Disconnect. Remember.</p>
+    <p class="mood-phrase">Help underpinned by time-relevant, contextual tools.</p>
+  </div>
+
+  <div class="mood-route">
+    <div class="route-label">Route V</div>
+    <div class="mood-cluster" data-folder="5"></div>
+  </div>
+
+  <div class="mood-phrases">
+    <p class="mood-phrase">Drop a pin on where you are today.</p>
+    <p class="mood-phrase">You are here. And that&rsquo;s normal.</p>
+    <p class="mood-phrase">How does it feel today &mdash; a doodle pad on your phone; draw the shape of your hurt.</p>
   </div>
 </section>
 
@@ -447,12 +531,156 @@
     defMeaning.innerHTML = w.meaning;
   }
 
-  window.addEventListener('load', placeWords);
+  const moods = [
+    { folder: '1', files: [
+      'Screenshot 2026-04-23 at 11.38.55.png',
+      'Screenshot 2026-04-23 at 11.39.10.png',
+      'Screenshot 2026-04-23 at 11.39.18.png',
+      'Screenshot 2026-04-23 at 11.39.29.png',
+      'Screenshot 2026-04-23 at 11.39.47.png',
+      'Screenshot 2026-04-23 at 11.40.16.png',
+      'Screenshot 2026-04-23 at 11.40.27.png',
+      'Screenshot 2026-04-23 at 11.40.56.png',
+      'Screenshot 2026-04-23 at 11.41.30.png',
+      'Screenshot 2026-04-23 at 11.41.56.png'
+    ]},
+    { folder: '2', files: [
+      'Screenshot 2026-04-23 at 11.29.08.png',
+      'Screenshot 2026-04-23 at 11.29.36.png',
+      'Screenshot 2026-04-23 at 11.29.50.png',
+      'Screenshot 2026-04-23 at 11.34.01.png',
+      'Screenshot 2026-04-23 at 11.34.17.png',
+      'Screenshot 2026-04-23 at 11.34.53.png',
+      'Screenshot 2026-04-23 at 11.37.13.png',
+      'Screenshot 2026-04-23 at 11.37.27.png',
+      'Screenshot 2026-04-23 at 11.37.51.png',
+      'Screenshot 2026-04-23 at 11.38.33.png'
+    ]},
+    { folder: '3', files: [
+      'Screenshot 2026-04-23 at 11.23.18.png',
+      'Screenshot 2026-04-23 at 11.24.10.png',
+      'Screenshot 2026-04-23 at 11.25.10.png',
+      'Screenshot 2026-04-23 at 11.25.18.png',
+      'Screenshot 2026-04-23 at 11.25.34.png',
+      'Screenshot 2026-04-23 at 11.26.11.png',
+      'Screenshot 2026-04-23 at 11.26.47.png'
+    ]},
+    { folder: '4', files: [
+      'Screenshot 2026-04-23 at 11.00.04 (1).png',
+      'Screenshot 2026-04-23 at 11.00.04.png',
+      'Screenshot 2026-04-23 at 11.00.13 (1).png',
+      'Screenshot 2026-04-23 at 11.00.13.png',
+      'Screenshot 2026-04-23 at 11.01.54 (1).png',
+      'Screenshot 2026-04-23 at 11.01.54.png'
+    ]},
+    { folder: '5', files: [
+      'IMG_5141.JPG',
+      'IMG_5142.JPG',
+      'IMG_5143.JPG',
+      'Screenshot 2026-04-23 at 07.38.26.png',
+      'Screenshot 2026-04-23 at 10.54.46.png',
+      'Screenshot 2026-04-23 at 10.56.47.png'
+    ]}
+  ];
+
+  function placeCluster(clusterEl, folder, files) {
+    clusterEl.innerHTML = '';
+    const W = clusterEl.offsetWidth;
+    const scale = W < 500 ? 0.55 : W < 800 ? 0.72 : W < 1100 ? 0.88 : 1;
+
+    const items = files.map(f => {
+      const seed = hashString(folder + f);
+      const tier = seed % 10;
+      let size;
+      if (tier < 2) size = 260;
+      else if (tier < 6) size = 195;
+      else size = 145;
+      size = Math.round(size * scale);
+      return { file: f, size, seed };
+    }).sort((a, b) => b.size - a.size);
+
+    const targetH = Math.round(600 * scale);
+    const placed = [];
+    let maxY = 0;
+
+    items.forEach(item => {
+      const s = item.size;
+      let x = 0, y = 0, attempts = 0, ok = false;
+      while (attempts < 400 && !ok) {
+        x = Math.random() * Math.max(1, W - s - 10) + 5;
+        y = Math.random() * Math.max(1, targetH - s - 10) + 5;
+        ok = true;
+        for (const p of placed) {
+          if (x < p.x + p.s + 14 &&
+              x + s + 14 > p.x &&
+              y < p.y + p.s + 14 &&
+              y + s + 14 > p.y) {
+            ok = false;
+            break;
+          }
+        }
+        attempts++;
+      }
+
+      placed.push({ x, y, s });
+      maxY = Math.max(maxY, y + s);
+
+      const wrap = document.createElement('div');
+      wrap.className = 'mood-img-wrap';
+      wrap.style.left = x + 'px';
+      wrap.style.top = y + 'px';
+      wrap.style.width = s + 'px';
+      wrap.style.height = s + 'px';
+
+      const seed = item.seed;
+      const dur = 18 + (seed % 8);
+      const delay = -(seed % 14);
+      const dx1 = ((seed % 5) - 2) * 0.9;
+      const dy1 = (((seed >> 3) % 5) - 2) * 0.9;
+      const dx2 = (((seed >> 6) % 5) - 2) * 0.9;
+      const dy2 = (((seed >> 9) % 5) - 2) * 0.9;
+      const dx3 = (((seed >> 12) % 5) - 2) * 0.9;
+      const dy3 = (((seed >> 15) % 5) - 2) * 0.9;
+      wrap.style.setProperty('--dx1', dx1 + 'px');
+      wrap.style.setProperty('--dy1', dy1 + 'px');
+      wrap.style.setProperty('--dx2', dx2 + 'px');
+      wrap.style.setProperty('--dy2', dy2 + 'px');
+      wrap.style.setProperty('--dx3', dx3 + 'px');
+      wrap.style.setProperty('--dy3', dy3 + 'px');
+      wrap.style.animation = `drift ${dur}s ease-in-out ${delay}s infinite`;
+
+      const img = document.createElement('img');
+      img.className = 'mood-img';
+      img.src = encodeURI(`img/moods/${folder}/${item.file}`);
+      img.alt = '';
+      img.loading = 'lazy';
+      wrap.appendChild(img);
+
+      clusterEl.appendChild(wrap);
+    });
+
+    clusterEl.style.height = (maxY + 20) + 'px';
+  }
+
+  function placeAllClusters() {
+    moods.forEach(m => {
+      const el = document.querySelector(`.mood-cluster[data-folder="${m.folder}"]`);
+      if (el) placeCluster(el, m.folder, m.files);
+    });
+  }
+
+  window.addEventListener('load', () => {
+    placeWords();
+    placeAllClusters();
+  });
 
   let resizeTimer;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(placeWords, 200);
+    resizeTimer = setTimeout(() => {
+      placeWords();
+      placeAllClusters();
+    }, 200);
   });
 </script>
 
