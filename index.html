@@ -520,21 +520,20 @@
 
   const moods = [
     { folder: '1', files: [
+      'hero.png',
       'Screenshot 2026-04-23 at 11.38.55.png',
-      'Screenshot 2026-04-23 at 11.39.10.png',
       'Screenshot 2026-04-23 at 11.39.18.png',
       'Screenshot 2026-04-23 at 11.39.29.png',
       'Screenshot 2026-04-23 at 11.39.47.png',
       'Screenshot 2026-04-23 at 11.40.16.png',
       'Screenshot 2026-04-23 at 11.40.27.png',
       'Screenshot 2026-04-23 at 11.40.56.png',
-      'Screenshot 2026-04-23 at 11.41.30.png',
-      'Screenshot 2026-04-23 at 11.41.56.png'
+      'Screenshot 2026-04-23 at 11.41.30.png'
     ]},
     { folder: '2', files: [
+      'hero.png',
       'Screenshot 2026-04-23 at 11.29.08.png',
       'Screenshot 2026-04-23 at 11.29.36.png',
-      'Screenshot 2026-04-23 at 11.29.50.png',
       'Screenshot 2026-04-23 at 11.34.01.png',
       'Screenshot 2026-04-23 at 11.34.17.png',
       'Screenshot 2026-04-23 at 11.34.53.png',
@@ -544,29 +543,31 @@
       'Screenshot 2026-04-23 at 11.38.33.png'
     ]},
     { folder: '3', files: [
-      'Screenshot 2026-04-23 at 11.23.18.png',
-      'Screenshot 2026-04-23 at 11.24.10.png',
+      'hero.png',
+      'Screenshot 2026-04-23 at 07.38.26.png',
+      'Screenshot 2026-04-23 at 10.54.46.png',
+      'Screenshot 2026-04-23 at 10.56.47.png',
       'Screenshot 2026-04-23 at 11.25.10.png',
-      'Screenshot 2026-04-23 at 11.25.18.png',
       'Screenshot 2026-04-23 at 11.25.34.png',
       'Screenshot 2026-04-23 at 11.26.11.png',
       'Screenshot 2026-04-23 at 11.26.47.png'
     ]},
     { folder: '4', files: [
-      'Screenshot 2026-04-23 at 11.00.04 (1).png',
+      'hero.png',
       'Screenshot 2026-04-23 at 11.00.04.png',
-      'Screenshot 2026-04-23 at 11.00.13 (1).png',
-      'Screenshot 2026-04-23 at 11.00.13.png',
-      'Screenshot 2026-04-23 at 11.01.54 (1).png',
-      'Screenshot 2026-04-23 at 11.01.54.png'
+      'Screenshot 2026-04-23 at 11.01.54.png',
+      'Screenshot 2026-04-23 at 11.23.18.png',
+      'Screenshot 2026-04-23 at 11.24.10.png'
     ]},
     { folder: '5', files: [
+      'hero.JPG',
       'IMG_5141.JPG',
       'IMG_5142.JPG',
       'IMG_5143.JPG',
-      'Screenshot 2026-04-23 at 07.38.26.png',
-      'Screenshot 2026-04-23 at 10.54.46.png',
-      'Screenshot 2026-04-23 at 10.56.47.png'
+      'IMG_5144.JPG',
+      'IMG_5145.JPG',
+      'IMG_5146.JPG',
+      'IMG_5147.JPG'
     ]}
   ];
 
@@ -576,14 +577,16 @@
     const scale = W < 500 ? 0.6 : W < 800 ? 0.78 : W < 1100 ? 0.92 : 1;
 
     const prep = files.map(f => {
+      const isHero = f.toLowerCase().startsWith('hero');
       const seed = hashString(folder + f);
       const tier = seed % 10;
       let w;
-      if (tier < 2) w = 240;
-      else if (tier < 6) w = 175;
+      if (isHero) w = 400;
+      else if (tier < 2) w = 220;
+      else if (tier < 6) w = 170;
       else w = 130;
       w = Math.round(w * scale);
-      return { file: f, width: w, seed };
+      return { file: f, width: w, seed, isHero };
     });
 
     const items = await Promise.all(prep.map(p => new Promise(resolve => {
@@ -597,7 +600,10 @@
       pre.src = url;
     })));
 
-    items.sort((a, b) => (b.width * b.height) - (a.width * a.height));
+    items.sort((a, b) => {
+      if (a.isHero !== b.isHero) return a.isHero ? -1 : 1;
+      return (b.width * b.height) - (a.width * a.height);
+    });
 
     const gap = 8;
     const edge = 4;
@@ -623,6 +629,15 @@
       };
 
       let x = 0, y = 0, attempts = 0, ok = false;
+
+      if (item.isHero) {
+        x = Math.round(W * (0.04 + Math.random() * 0.12));
+        y = Math.round(edge + Math.random() * targetH * 0.12);
+        x = Math.max(edge, Math.min(W - iw - edge, x));
+        y = Math.max(edge, Math.min(Math.max(edge, targetH - ih - edge), y));
+        ok = true;
+      }
+
       while (attempts < 500 && !ok) {
         x = Math.random() * Math.max(1, W - iw - edge * 2) + edge;
         y = Math.random() * Math.max(1, targetH - ih - edge * 2) + edge;
