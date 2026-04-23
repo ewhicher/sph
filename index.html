@@ -581,10 +581,10 @@
       const seed = hashString(folder + f);
       const tier = seed % 10;
       let w;
-      if (isHero) w = 400;
-      else if (tier < 2) w = 220;
-      else if (tier < 6) w = 170;
-      else w = 130;
+      if (isHero) w = 470;
+      else if (tier < 2) w = 205;
+      else if (tier < 6) w = 160;
+      else w = 125;
       w = Math.round(w * scale);
       return { file: f, width: w, seed, isHero };
     });
@@ -600,61 +600,38 @@
       pre.src = url;
     })));
 
-    items.sort((a, b) => {
-      if (a.isHero !== b.isHero) return a.isHero ? -1 : 1;
-      return (b.width * b.height) - (a.width * a.height);
+    const hero = items.find(it => it.isHero) || null;
+    const others = items.filter(it => !it.isHero)
+      .sort((a, b) => (b.width * b.height) - (a.width * a.height));
+
+    const leftItems = [], rightItems = [];
+    let lAreaAcc = 0, rAreaAcc = 0;
+    others.forEach(it => {
+      const a = it.width * it.height;
+      if (lAreaAcc <= rAreaAcc) { leftItems.push(it); lAreaAcc += a; }
+      else { rightItems.push(it); rAreaAcc += a; }
     });
 
-    const gap = 8;
+    const gap = 10;
     const edge = 4;
-    const totalArea = items.reduce((s, it) => s + (it.width + gap) * (it.height + gap), 0);
-    const density = 0.62;
-    const targetH = Math.max(
-      Math.round(280 * scale),
-      Math.ceil(totalArea / (W * density))
-    );
+    const density = 0.58;
+    const narrow = !hero || (W - hero.width - gap * 2 - edge * 2) / 2 < 140;
+
     const placed = [];
     let maxY = 0;
 
-    items.forEach(item => {
+    function overlapsAt(tx, ty, iw, ih) {
+      for (const p of placed) {
+        if (tx < p.x + p.w + gap &&
+            tx + iw + gap > p.x &&
+            ty < p.y + p.h + gap &&
+            ty + ih + gap > p.y) return true;
+      }
+      return false;
+    }
+
+    function appendItem(item, x, y) {
       const iw = item.width, ih = item.height;
-      const overlapsAt = (tx, ty) => {
-        for (const p of placed) {
-          if (tx < p.x + p.w + gap &&
-              tx + iw + gap > p.x &&
-              ty < p.y + p.h + gap &&
-              ty + ih + gap > p.y) return true;
-        }
-        return false;
-      };
-
-      let x = 0, y = 0, attempts = 0, ok = false;
-
-      if (item.isHero) {
-        x = Math.round(W * (0.04 + Math.random() * 0.12));
-        y = Math.round(edge + Math.random() * targetH * 0.12);
-        x = Math.max(edge, Math.min(W - iw - edge, x));
-        y = Math.max(edge, Math.min(Math.max(edge, targetH - ih - edge), y));
-        ok = true;
-      }
-
-      while (attempts < 500 && !ok) {
-        x = Math.random() * Math.max(1, W - iw - edge * 2) + edge;
-        y = Math.random() * Math.max(1, targetH - ih - edge * 2) + edge;
-        ok = !overlapsAt(x, y);
-        attempts++;
-      }
-
-      if (!ok) {
-        x = Math.max(edge, Math.min(W - iw - edge, Math.random() * (W - iw)));
-        y = maxY + gap;
-        let guard = 0;
-        while (overlapsAt(x, y) && guard < 100) { y += 12; guard++; }
-      }
-
-      placed.push({ x, y, w: iw, h: ih });
-      maxY = Math.max(maxY, y + ih);
-
       const wrap = document.createElement('div');
       wrap.className = 'mood-img-wrap';
       wrap.style.left = x + 'px';
@@ -684,9 +661,63 @@
       img.src = item.src;
       img.alt = '';
       wrap.appendChild(img);
-
       clusterEl.appendChild(wrap);
-    });
+    }
+
+    function packRegion(list, xMin, xMax, yMin, yMax) {
+      list.forEach(item => {
+        const iw = item.width, ih = item.height;
+        const xHi = Math.max(xMin, xMax - iw);
+        const yHi = Math.max(yMin, yMax - ih);
+        let x = xMin, y = yMin, attempts = 0, ok = false;
+        while (attempts < 500 && !ok) {
+          x = xMin + Math.random() * Math.max(1, xHi - xMin);
+          y = yMin + Math.random() * Math.max(1, yHi - yMin);
+          ok = !overlapsAt(x, y, iw, ih);
+          attempts++;
+        }
+        if (!ok) {
+          x = xMin + Math.random() * Math.max(1, xHi - xMin);
+          y = maxY + gap;
+          let guard = 0;
+          while (overlapsAt(x, y, iw, ih) && guard < 100) { y += 12; guard++; }
+        }
+        placed.push({ x, y, w: iw, h: ih });
+        maxY = Math.max(maxY, y + ih);
+        appendItem(item, x, y);
+      });
+    }
+
+    if (narrow) {
+      let startY = edge;
+      if (hero) {
+        const hx = Math.round((W - hero.width) / 2);
+        const hy = edge;
+        placed.push({ x: hx, y: hy, w: hero.width, h: hero.height });
+        maxY = hy + hero.height;
+        appendItem(hero, hx, hy);
+        startY = maxY + gap;
+      }
+      const oArea = others.reduce((s, o) => s + (o.width + gap) * (o.height + gap), 0);
+      const neededH = oArea / Math.max(1, W - edge * 2) / density;
+      packRegion(others, edge, W - edge, startY, startY + Math.ceil(neededH));
+    } else {
+      const halfW = Math.floor((W - hero.width - gap * 2 - edge * 2) / 2);
+      const lAreaSum = leftItems.reduce((s, o) => s + (o.width + gap) * (o.height + gap), 0);
+      const rAreaSum = rightItems.reduce((s, o) => s + (o.width + gap) * (o.height + gap), 0);
+      const lH = lAreaSum / (halfW * density);
+      const rH = rAreaSum / (halfW * density);
+      const targetH = Math.max(Math.ceil(lH), Math.ceil(rH), hero.height + edge * 2);
+
+      const heroX = Math.round((W - hero.width) / 2);
+      const heroY = Math.round((targetH - hero.height) / 2);
+      placed.push({ x: heroX, y: heroY, w: hero.width, h: hero.height });
+      maxY = heroY + hero.height;
+      appendItem(hero, heroX, heroY);
+
+      packRegion(leftItems, edge, heroX - gap, edge, targetH - edge);
+      packRegion(rightItems, heroX + hero.width + gap, W - edge, edge, targetH - edge);
+    }
 
     clusterEl.style.height = (maxY + 10) + 'px';
   }
