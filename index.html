@@ -204,16 +204,8 @@
   }
 
   .mood-route {
-    margin: 4rem 0;
+    margin: 2rem 0;
     position: relative;
-  }
-
-  .route-label {
-    font-style: italic;
-    font-size: 14px;
-    letter-spacing: 0.04em;
-    color: var(--ink-soft);
-    margin-bottom: 2rem;
   }
 
   .mood-cluster {
@@ -221,7 +213,7 @@
     width: 100%;
     max-width: 1400px;
     margin: 0 auto;
-    min-height: 400px;
+    min-height: 300px;
   }
 
   .mood-img-wrap {
@@ -251,8 +243,8 @@
   .mood-phrases {
     display: flex;
     flex-direction: column;
-    gap: 2.5rem;
-    margin: 6rem auto;
+    gap: 1.5rem;
+    margin: 3.5rem auto;
     max-width: 1400px;
     width: 100%;
   }
@@ -278,8 +270,8 @@
 
   @media (max-width: 900px) {
     .mood-phrases {
-      margin: 4rem auto;
-      gap: 2rem;
+      margin: 2.5rem auto;
+      gap: 1.25rem;
     }
     .mood-phrase,
     .mood-phrase:nth-child(even),
@@ -289,7 +281,7 @@
       align-self: stretch;
     }
     .mood-route {
-      margin: 3rem 0;
+      margin: 1.5rem 0;
     }
   }
 
@@ -331,8 +323,8 @@
 
 <section id="moodboard">
   <div class="eyebrow">02 — Direction</div>
-  <h1 class="section-title">Five routes.</h1>
-  <p class="section-lede">Different atmospheres we could explore. Phrases from research, threaded between.</p>
+  <h1 class="section-title">How it might feel.</h1>
+  <p class="section-lede">Imagery and phrases from research, woven together.</p>
 
   <div class="mood-phrases">
     <p class="mood-phrase">Accessibility through the lens of loss.</p>
@@ -340,7 +332,6 @@
   </div>
 
   <div class="mood-route">
-    <div class="route-label">Route I</div>
     <div class="mood-cluster" data-folder="1"></div>
   </div>
 
@@ -350,7 +341,6 @@
   </div>
 
   <div class="mood-route">
-    <div class="route-label">Route II</div>
     <div class="mood-cluster" data-folder="2"></div>
   </div>
 
@@ -360,7 +350,6 @@
   </div>
 
   <div class="mood-route">
-    <div class="route-label">Route III</div>
     <div class="mood-cluster" data-folder="3"></div>
   </div>
 
@@ -370,7 +359,6 @@
   </div>
 
   <div class="mood-route">
-    <div class="route-label">Route IV</div>
     <div class="mood-cluster" data-folder="4"></div>
   </div>
 
@@ -380,7 +368,6 @@
   </div>
 
   <div class="mood-route">
-    <div class="route-label">Route V</div>
     <div class="mood-cluster" data-folder="5"></div>
   </div>
 
@@ -583,54 +570,82 @@
     ]}
   ];
 
-  function placeCluster(clusterEl, folder, files) {
+  async function placeCluster(clusterEl, folder, files) {
     clusterEl.innerHTML = '';
     const W = clusterEl.offsetWidth;
-    const scale = W < 500 ? 0.55 : W < 800 ? 0.72 : W < 1100 ? 0.88 : 1;
+    const scale = W < 500 ? 0.6 : W < 800 ? 0.78 : W < 1100 ? 0.92 : 1;
 
-    const items = files.map(f => {
+    const prep = files.map(f => {
       const seed = hashString(folder + f);
       const tier = seed % 10;
-      let size;
-      if (tier < 2) size = 260;
-      else if (tier < 6) size = 195;
-      else size = 145;
-      size = Math.round(size * scale);
-      return { file: f, size, seed };
-    }).sort((a, b) => b.size - a.size);
+      let w;
+      if (tier < 2) w = 240;
+      else if (tier < 6) w = 175;
+      else w = 130;
+      w = Math.round(w * scale);
+      return { file: f, width: w, seed };
+    });
 
-    const targetH = Math.round(600 * scale);
+    const items = await Promise.all(prep.map(p => new Promise(resolve => {
+      const pre = new Image();
+      const url = encodeURI(`img/moods/${folder}/${p.file}`);
+      pre.onload = () => {
+        const aspect = pre.naturalHeight / pre.naturalWidth;
+        resolve({ ...p, height: Math.round(p.width * aspect), src: url });
+      };
+      pre.onerror = () => resolve({ ...p, height: p.width, src: url });
+      pre.src = url;
+    })));
+
+    items.sort((a, b) => (b.width * b.height) - (a.width * a.height));
+
+    const gap = 8;
+    const edge = 4;
+    const totalArea = items.reduce((s, it) => s + (it.width + gap) * (it.height + gap), 0);
+    const density = 0.62;
+    const targetH = Math.max(
+      Math.round(280 * scale),
+      Math.ceil(totalArea / (W * density))
+    );
     const placed = [];
     let maxY = 0;
 
     items.forEach(item => {
-      const s = item.size;
-      let x = 0, y = 0, attempts = 0, ok = false;
-      while (attempts < 400 && !ok) {
-        x = Math.random() * Math.max(1, W - s - 10) + 5;
-        y = Math.random() * Math.max(1, targetH - s - 10) + 5;
-        ok = true;
+      const iw = item.width, ih = item.height;
+      const overlapsAt = (tx, ty) => {
         for (const p of placed) {
-          if (x < p.x + p.s + 14 &&
-              x + s + 14 > p.x &&
-              y < p.y + p.s + 14 &&
-              y + s + 14 > p.y) {
-            ok = false;
-            break;
-          }
+          if (tx < p.x + p.w + gap &&
+              tx + iw + gap > p.x &&
+              ty < p.y + p.h + gap &&
+              ty + ih + gap > p.y) return true;
         }
+        return false;
+      };
+
+      let x = 0, y = 0, attempts = 0, ok = false;
+      while (attempts < 500 && !ok) {
+        x = Math.random() * Math.max(1, W - iw - edge * 2) + edge;
+        y = Math.random() * Math.max(1, targetH - ih - edge * 2) + edge;
+        ok = !overlapsAt(x, y);
         attempts++;
       }
 
-      placed.push({ x, y, s });
-      maxY = Math.max(maxY, y + s);
+      if (!ok) {
+        x = Math.max(edge, Math.min(W - iw - edge, Math.random() * (W - iw)));
+        y = maxY + gap;
+        let guard = 0;
+        while (overlapsAt(x, y) && guard < 100) { y += 12; guard++; }
+      }
+
+      placed.push({ x, y, w: iw, h: ih });
+      maxY = Math.max(maxY, y + ih);
 
       const wrap = document.createElement('div');
       wrap.className = 'mood-img-wrap';
       wrap.style.left = x + 'px';
       wrap.style.top = y + 'px';
-      wrap.style.width = s + 'px';
-      wrap.style.height = s + 'px';
+      wrap.style.width = iw + 'px';
+      wrap.style.height = ih + 'px';
 
       const seed = item.seed;
       const dur = 18 + (seed % 8);
@@ -651,15 +666,14 @@
 
       const img = document.createElement('img');
       img.className = 'mood-img';
-      img.src = encodeURI(`img/moods/${folder}/${item.file}`);
+      img.src = item.src;
       img.alt = '';
-      img.loading = 'lazy';
       wrap.appendChild(img);
 
       clusterEl.appendChild(wrap);
     });
 
-    clusterEl.style.height = (maxY + 20) + 'px';
+    clusterEl.style.height = (maxY + 10) + 'px';
   }
 
   function placeAllClusters() {
